@@ -10,7 +10,13 @@ export const BookingsPage = () => {
     setBookingsList(newBookingList);
   };
 
-  // useEffect(() => {}, [bookingsList]);
+  useEffect(() => {
+    setBookingsList(
+      bookingJSON.sort((a, b): any => {
+        return Date.parse(b.date) - Date.parse(a.date);
+      })
+    );
+  }, []);
 
   return (
     <div className="bookings-page">
