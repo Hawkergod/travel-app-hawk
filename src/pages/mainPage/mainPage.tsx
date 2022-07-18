@@ -4,15 +4,13 @@ import "../../assets/css/style.css";
 import travelListJSON from "../../data/trips.json";
 
 export const MainPage = () => {
-  const [travelList, setTravelList] = useState(travelListJSON);
-  const [actualTravelList, setActualTravelList] = useState(travelList);
+  const [actualTravelList, setActualTravelList] = useState(travelListJSON);
   const [query, setQuery] = useState("");
   const [filtrDuration, setFiltrDuratin] = useState<number[]>([0, 0]);
   const [filtrLevel, setFiltrLevel] = useState("");
 
   const onInputQuery = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    console.log(e.currentTarget.value);
-    setQuery(e.currentTarget.value);
+    setQuery(e.currentTarget.value.toLowerCase().trim());
   };
 
   const onChangeSelectDuration = (
@@ -41,30 +39,42 @@ export const MainPage = () => {
 
   useEffect(() => {
     setActualTravelList(
-      travelList.filter(({ title }) =>
-        title.toLowerCase().trim().includes(query.toLowerCase().trim())
-      )
+      travelListJSON.filter((el) => {
+        if (filtrDuration[1] === 0 && filtrLevel === "") {
+          if (el.title.toLowerCase().trim().includes(query)) {
+            return el;
+          }
+        }
+        if (filtrLevel === "" && filtrDuration[1] !== 0) {
+          if (
+            el.title.toLowerCase().trim().includes(query) &&
+            el.duration >= filtrDuration[0] &&
+            el.duration < filtrDuration[1]
+          ) {
+            return el;
+          }
+        }
+        if (filtrLevel !== "" && filtrDuration[1] === 0) {
+          if (
+            el.title.toLowerCase().trim().includes(query) &&
+            el.level === filtrLevel
+          ) {
+            return el;
+          }
+        }
+        if (filtrLevel !== "" && filtrDuration[1] !== 0) {
+          if (
+            el.title.toLowerCase().trim().includes(query) &&
+            el.level === filtrLevel &&
+            el.duration >= filtrDuration[0] &&
+            el.duration < filtrDuration[1]
+          ) {
+            return el;
+          }
+        }
+      })
     );
-  }, [query, travelList]);
-
-  useEffect(() => {
-    if (filtrDuration[1] !== 0)
-      setActualTravelList(
-        travelList.filter(
-          ({ duration }) =>
-            duration >= filtrDuration[0] && duration < filtrDuration[1]
-        )
-      );
-    else setActualTravelList(travelListJSON);
-  }, [filtrDuration, travelList]);
-
-  useEffect(() => {
-    if (filtrLevel !== "")
-      setActualTravelList(
-        travelList.filter(({ level }) => level === filtrLevel)
-      );
-    else setActualTravelList(travelListJSON);
-  }, [filtrLevel, travelList]);
+  }, [filtrDuration, filtrLevel, query]);
 
   return (
     <main>
