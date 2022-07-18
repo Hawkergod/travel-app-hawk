@@ -17,7 +17,6 @@ function App() {
         path="/"
         element={<Layout isLogin={isLogin} setIsLogin={setIsLogin} />}
       >
-        {/* <Route index element={<MainPage />} /> */}
         <Route
           index
           element={
